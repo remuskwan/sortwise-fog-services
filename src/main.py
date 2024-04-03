@@ -4,17 +4,20 @@ from fastapi.middleware.cors import CORSMiddleware
 import asyncio
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 import logging
+import os
+from dotenv import load_dotenv
 
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:3000"],  # Allows React development server
+    allow_origins=["http://127.0.0.1:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 logger = logging.getLogger(__name__)
+load_dotenv()
 
 
 class ConnectionManager:
@@ -58,17 +61,18 @@ def handle_iot_message(client, userdata, message):
 
 async def start_iot_client():
     # Initialize the MQTT client
-    myMQTTClient = AWSIoTMQTTClient("remus_rpi4")  # Use your Thing Name here
+    myMQTTClient = AWSIoTMQTTClient(
+        os.getenv("IOT_CORE_THING_NAME"))  # Use your Thing Name here
     # Use your AWS IoT Core endpoint here
     myMQTTClient.configureEndpoint(
-        "a1zij3hvzjwttw-ats.iot.ap-southeast-1.amazonaws.com", 8883)
+        os.getenv("IOT_CORE_ENDPOINT"), 8883)
     # Update paths to your downloaded files
     myMQTTClient.configureCredentials(
-        "/home/pi/Documents/aws-iot-core-credentials/root-CA.crt", "/home/pi/Documents/aws-iot-core-credentials/remus_rpi4.private.key", "/home/pi/Documents/aws-iot-core-credentials/remus_rpi4.cert.pem")
+        os.getenv("IOT_CORE_ROOT_CA_PATH"), os.getenv("IOT_CORE_PRIVATE_KEY_PATH"), os.getenv("IOT_CORE_CERTIFICATE_PATH"))
 
     # Connect and subscribe to AWS IoT
     myMQTTClient.connect()
-    myMQTTClient.subscribe("inference/results", 1, handle_iot_message)
+    myMQTTClient.subscribe(os.getenv("IOT_CORE_TOPIC"), 1, handle_iot_message)
 
 
 @app.on_event("startup")
