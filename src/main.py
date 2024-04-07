@@ -1,13 +1,27 @@
 from typing import List
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 import asyncio
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 import logging
 import os
 from dotenv import load_dotenv
 
-app = FastAPI()
+from .sensor.router import router as sensor_router
+from .sensor.distance.router import router as distance_router
+
+
+@asynccontextmanager
+def lifespan(app: FastAPI):
+    loop = asyncio.get_running_loop()
+    loop.create_task(start_iot_client())
+
+
+# Routers
+sensor_router.include_router(distance_router)
+
+app = FastAPI(lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://127.0.0.1:3000"],
@@ -15,6 +29,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.include_router(sensor_router)
 
 logger = logging.getLogger(__name__)
 load_dotenv()
@@ -73,9 +88,3 @@ async def start_iot_client():
     # Connect and subscribe to AWS IoT
     myMQTTClient.connect()
     myMQTTClient.subscribe(os.getenv("IOT_CORE_TOPIC"), 1, handle_iot_message)
-
-
-@app.on_event("startup")
-async def startup_event():
-    loop = asyncio.get_running_loop()
-    loop.create_task(start_iot_client())
