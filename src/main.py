@@ -1,6 +1,7 @@
 from typing import List
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 import asyncio
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 import logging
@@ -8,6 +9,11 @@ import os
 import json
 from src.servo import trigger_servo, ServoCommand
 from dotenv import load_dotenv
+
+from .sensor.router import router as sensor_router
+from .sensor.distance.router import router as distance_router
+
+sensor_router.include_router(distance_router)
 
 app = FastAPI()
 app.add_middleware(
@@ -17,6 +23,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.include_router(sensor_router)
 
 logger = logging.getLogger(__name__)
 load_dotenv()
