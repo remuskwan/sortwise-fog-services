@@ -65,7 +65,7 @@ def handle_iot_message(client, userdata, message):
         msg = message.payload.decode()
         logger.info(f"Received message from IoT Core: {msg}")
         inference_entry = json.loads(msg)
-        is_recyclable = ServoCommand.Recyclable if inference_entry["InferenceResults"]["Recyclable"] else ServoCommand.NonRecyclable
+        is_recyclable = ServoCommand.Recyclable if inference_entry["Recyclable"] else ServoCommand.NonRecyclable
         asyncio.run(trigger_servo(is_recyclable))
         asyncio.run(manager.broadcast(msg))
     except Exception as e:
