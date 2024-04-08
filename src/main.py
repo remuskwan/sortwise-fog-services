@@ -83,6 +83,6 @@ async def start_iot_client():
 
 
 @app.on_event("startup")
-def startup_event(app: FastAPI):
+async def startup_event():
     loop = asyncio.get_running_loop()
     loop.create_task(start_iot_client())
