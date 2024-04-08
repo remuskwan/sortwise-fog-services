@@ -11,17 +11,9 @@ from dotenv import load_dotenv
 from .sensor.router import router as sensor_router
 from .sensor.distance.router import router as distance_router
 
-
-@asynccontextmanager
-def lifespan(app: FastAPI):
-    loop = asyncio.get_running_loop()
-    loop.create_task(start_iot_client())
-
-
-# Routers
 sensor_router.include_router(distance_router)
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://127.0.0.1:3000"],
@@ -88,3 +80,9 @@ async def start_iot_client():
     # Connect and subscribe to AWS IoT
     myMQTTClient.connect()
     myMQTTClient.subscribe(os.getenv("IOT_CORE_TOPIC"), 1, handle_iot_message)
+
+
+@app.on_event("startup")
+def startup_event(app: FastAPI):
+    loop = asyncio.get_running_loop()
+    loop.create_task(start_iot_client())
