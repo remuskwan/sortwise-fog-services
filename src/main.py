@@ -6,7 +6,7 @@ from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 import logging
 import os
 import json
-from servo import ServoCommand, trigger_servo
+from src.servo import trigger_servo, ServoCommand
 from dotenv import load_dotenv
 
 app = FastAPI()
