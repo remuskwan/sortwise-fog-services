@@ -23,4 +23,4 @@ router  = APIRouter(prefix="/servo")
 @router.get("/")
 async def test_servo(recyclable: bool):
     is_recyclable = ServoCommand.Recyclable if recyclable else ServoCommand.NonRecyclable
-    trigger_servo(is_recyclable)
+    await trigger_servo(is_recyclable)
