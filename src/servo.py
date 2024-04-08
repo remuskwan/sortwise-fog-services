@@ -8,8 +8,9 @@ class ServoCommand(Enum):
     Recyclable = "Recyclable"
     NonRecyclable = "NonRecyclable"
 
-SERIAL_PORT = '/dev/ttyACM0' # Hardcoded 
-servo_conn = serial.Serial(port='/dev/ttyACM0', baudrate=115200, timeout=1)
+
+servo_conn = None
+
 async def trigger_servo(command: ServoCommand):
     try:
         response = str.encode(f'{command}\r\n')
@@ -24,3 +25,12 @@ router  = APIRouter(prefix="/servo")
 async def test_servo(recyclable: bool):
     is_recyclable = ServoCommand.Recyclable if recyclable else ServoCommand.NonRecyclable
     await trigger_servo(is_recyclable)
+
+@router.on_event("startup")
+def startup_event():
+    global servo_conn
+    try:
+        SERIAL_PORT = '/dev/ttyACM0' # Hardcoded 
+        servo_conn = serial.Serial(port=SERIAL_PORT, baudrate=115200, timeout=1)
+    except Exception as e:
+        print(f"Error in getting servo: {e}") 
