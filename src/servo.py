@@ -3,14 +3,16 @@ from enum import Enum
 from fastapi import APIRouter
 
 class ServoCommand(Enum):
-    Recyclable = "Recycle"
+    def __str__(self) -> str:
+        return str(self.value)
+    Recyclable = "Recyclable"
     NonRecyclable = "NonRecyclable"
 
 SERIAL_PORT = '/dev/ttyACM0' # Hardcoded 
 servo_conn = serial.Serial(port='/dev/ttyACM0', baudrate=115200, timeout=1)
 async def trigger_servo(command: ServoCommand):
     try:
-        response = command + '\r\n'
+        response = str.encode(f'{command}\r\n')
         servo_conn.write(response)
         print(f"Response {response} successfully sent")
     except Exception as e:
