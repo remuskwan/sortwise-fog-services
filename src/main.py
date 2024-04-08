@@ -7,7 +7,7 @@ from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 import logging
 import os
 import json
-from src.servo import trigger_servo, ServoCommand
+from src.servo import trigger_servo, ServoCommand, router as servo_router
 from dotenv import load_dotenv
 
 from .sensor.router import router as sensor_router
@@ -24,6 +24,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(sensor_router)
+app.include_router(servo_router)
 
 logger = logging.getLogger(__name__)
 load_dotenv()
