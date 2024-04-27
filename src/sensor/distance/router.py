@@ -16,6 +16,7 @@ MQTT_PORT = int(os.getenv("MQTT_PORT"))
 MQTT_TOPIC = os.getenv("MQTT_DISTANCE_TOPIC")
 MQTT_USERNAME = os.getenv("MQTT_USERNAME")
 MQTT_PASSWORD = os.getenv("MQTT_PASSWORD")
+
 client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 client.username_pw_set(MQTT_USERNAME, MQTT_PASSWORD)
 
