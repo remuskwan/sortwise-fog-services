@@ -6,7 +6,7 @@ import paho.mqtt.client as mqtt
 
 router = APIRouter(
     prefix="/distance",
-    tags=["distance", "ultrasonic"],
+    tags=["distance"],
     responses={404: {"description": "Not found"}},
 )
 # Load environment variables
