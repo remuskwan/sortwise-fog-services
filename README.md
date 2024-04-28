@@ -10,31 +10,36 @@ python --version
 
 ## Setup
 
-1. Install Python Virtual Environment
+1. Install Python Virtual Environment.
 
 ```
 python -m venv env
 ```
 
-2. Activate the virtual environment
+2. Activate the virtual environment.
+
+On Unix environments (Linux/macOS), run the following command:
 
 ```
 source env/bin/activate
 ```
 
-3. Install the required packages
+On Windows, run the following command:
+
+```
+source env/Scripts/activate
+```
+
+3. Install the required packages.
 
 ```
 pip install -r requirements.txt
 ```
 
-### Notes
+#### Notes
 
-1. If there are new packages installed, update the requirements.txt file by running the following command:
-
-```
-pip freeze > requirements.txt
-```
+1. On Windows, `uvloop` cannot be installed. Comment out line 53 in `requirements.txt` before installing Python packages via pip.
+2. If there are new packages installed, update the requirements.txt file by running the following command:
 
 ## Running the development server
 
